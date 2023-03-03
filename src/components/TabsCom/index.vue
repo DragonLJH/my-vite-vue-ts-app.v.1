@@ -6,7 +6,7 @@
                 {{ item.name }}
             </div>
         </div>
-        <div class="tabs-com-main" >
+        <div class="tabs-com-main">
             <div v-for="(item, index) in tabs" :key="index">
                 <slot :name="thisActive === item.path ? item.path : ''"></slot>
             </div>
@@ -35,7 +35,7 @@ type tabsProps = {
 // withDefaults定义默认值
 const props = withDefaults(defineProps<tabsProps>(), {
     tabs: () => {
-        return []
+        return [{ name: "", path: "" }]
     },
     active: () => {
         return ""

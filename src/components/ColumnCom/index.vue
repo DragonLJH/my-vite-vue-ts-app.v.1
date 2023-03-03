@@ -9,30 +9,25 @@
             <div :class="`item ${item.children ? 'children' : ''} `" v-for="(item, index) in props.columnData" :key="index"
                 @click.stop="() => item.children ?? toPath(item.path)">
                 <div v-if="iconState">
-                    <div :class="`children-icon ${childrenObj[item.path] ? 'active' : ''}`"
+                    <div v-if="item.children" :class="`children-icon ${childrenObj[item.path] ? 'active' : ''}`"
                         @click.stop="() => childrenIconClick(item.path)">
                     </div>
                     <div class="item-name">
                         <div>{{ item.name }}</div>
                         <div v-if="item.children && childrenObj[item.path]">
-                            <div class="item-name-children" v-for="(cItem, index) in item.children" :key="index"
-                                @click.stop="() => toPath(cItem.path)">
-                                {{ cItem.name }}
-                            </div>
+                            <Column :column-data="item.children" />
                         </div>
                     </div>
                 </div>
-                <div class="item-icon" v-else>
+
+                <div class="item-icon" v-if="!iconState">
                     <div>{{ item.icon ? item.icon : item.name }}</div>
                 </div>
 
                 <div class="item-msg" v-if="!iconState">
                     <div>{{ item.name }}</div>
                     <div v-if="item.children">
-                        <div class="item-name-children" v-for="(cItem, index) in item.children" :key="index"
-                            @click.stop="() => toPath(cItem.path)">
-                            {{ cItem.name }}
-                        </div>
+                        <Column :column-data="item.children" />
                     </div>
                 </div>
             </div>
@@ -42,6 +37,8 @@
 </template>
 
 <script lang="ts" setup>
+import Column from './index.vue'
+
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -52,7 +49,7 @@ type columnComItemProps = {
     children?: Array<columnComItemProps>
 }
 type columnComProps = {
-    show: boolean
+    show?: boolean
     columnData: Array<columnComItemProps>
 }
 
@@ -82,6 +79,7 @@ const props = withDefaults(defineProps<columnComProps>(), {
     }
 })
 
+
 // 菜单栏放大缩小的icon（按钮）
 const iconState = ref(true)
 
@@ -98,6 +96,7 @@ const columnComStyle = reactive<any>({
 
 props.columnData.forEach((item: columnComItemProps) => {
     if (item.children) {
+        console.log(item.children)
         childrenObj[item.path] = false
     }
 })
@@ -124,6 +123,7 @@ const childrenIconClick = (path: string, flag: boolean = false) => {
     childrenObj[path] = !childrenObj[path]
     console.log(childrenObj)
 }
+
 
 </script>
 

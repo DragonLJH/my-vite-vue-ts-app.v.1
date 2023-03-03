@@ -26,7 +26,7 @@ import { reactive } from "vue";
 
 let homeRoute: any = undefined;
 for (let i = routes.length - 1; i >= 0; i--)
-    if (routes[i].path === "/home") homeRoute = reactive(routes[i])
+    if (routes[i].path === "/HomeView") homeRoute = reactive(routes[i])
 console.log("homeRoute", homeRoute)
 </script>
 

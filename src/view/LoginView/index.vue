@@ -6,7 +6,7 @@
         <div class="login-view-mian">
             <TabsCom :tabs="tabs" top-type="flex" :width="500">
                 <template #path1>
-                    <div class="login" >
+                    <div class="login">
                         <InputCom placeholder="请输入账号" title="账号" v-model="loginObj.account" />
                         <InputCom placeholder="请输入密码" title="密码" v-model="loginObj.password" inp-type="password" />
                         <InputCom value="登录" inp-type="button" @btnClick="login" />
@@ -14,7 +14,7 @@
                     </div>
                 </template>
                 <template #path2>
-                    <div class="register" >
+                    <div class="register">
                         <InputCom placeholder="请输入账号" title="账号" v-model="registerObj.account" />
                         <InputCom placeholder="请输入密码" title="密码" v-model="registerObj.password" inp-type="password" />
                         <InputCom placeholder="请输入密码" title="确认密码" v-model="registerObj.confirmPassword"
@@ -53,7 +53,7 @@ let registerObj = reactive({
 })
 
 const login = () => {
-    router.push("/home")
+    router.push("/HomeView")
 }
 const register = () => {
     console.log("register", registerObj)
