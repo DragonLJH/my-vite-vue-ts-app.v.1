@@ -67,6 +67,14 @@ console.log("homeRoute", homeRoute)
             height: 100%;
             margin: 0px 0px 0px 10px;
             background-color: #f6f6f6;
+
+            .content-top {
+                height: 30px;
+                background-color: #fff;
+            }
+            .content-main{
+                height: calc(100% - 30px);
+            }
         }
     }
 }

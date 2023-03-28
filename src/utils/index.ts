@@ -8,3 +8,11 @@ export const ObjectPropertyValue = (obj: { [x: string]: any; }, str: string | nu
     return obj[str]
 }
 
+export const toPx = (obj: { [k: string]: string | number }) => {
+    const list = ["width", "height"]
+    Object.keys(obj).forEach((item) => {
+        if (list.includes(item)) obj[item] += "px"
+    })
+    return obj
+}
+
