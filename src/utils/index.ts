@@ -8,11 +8,19 @@ export const ObjectPropertyValue = (obj: { [x: string]: any; }, str: string | nu
     return obj[str]
 }
 
+// 固定对象属性得值添加 px 
 export const toPx = (obj: { [k: string]: string | number }) => {
-    const list = ["width", "height"]
-    Object.keys(obj).forEach((item) => {
-        if (list.includes(item)) obj[item] += "px"
+    Object.entries(obj).forEach(([k, v]) => {
+        if (Object.prototype.toString.call(v) == '[object Number]') obj[k] += "px"
     })
     return obj
 }
+
+//驼峰转连体 
+export const HumpToHyphen = (data: string) => {
+    return data.replace(/([A-Z])/g, "-$1").toLowerCase().split("-").filter(item => item).join("-");
+}
+
+
+
 

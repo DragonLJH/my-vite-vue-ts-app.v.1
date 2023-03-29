@@ -1,4 +1,5 @@
-
+import type { App } from 'vue';
+import { HumpToHyphen } from '@/utils/index'
 
 // 获取页面信息  
 const pageInformationPath = import.meta.glob('./**/page.ts', {
@@ -14,6 +15,15 @@ type metaProps = {
 
 export const pathsMsg = {} as { [k: string]: string }
 export const paths = {} as { [k: string]: any }
+export const lowPlugin = {
+    install(app: App) {
+        Object.entries(paths).forEach(([k, v]) => {
+            v().then((result: any) => {
+                app.component(k, result.default);
+            })
+        })
+    }
+}
 
 Object.entries(pageInformationPath).forEach(([pagePath, meta]) => {
     const { title } = meta as metaProps
@@ -22,3 +32,6 @@ Object.entries(pageInformationPath).forEach(([pagePath, meta]) => {
     pathsMsg[name] = title
     paths[name] = indexInformationPath[path]
 })
+
+
+
