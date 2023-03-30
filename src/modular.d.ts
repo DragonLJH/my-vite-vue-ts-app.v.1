@@ -3,3 +3,8 @@ declare module '*.vue' {
     const componentOptions: ComponentOptions
     export default componentOptions
 }
+
+declare module 'long-npm-vue' {
+    const install: any;
+    export default install
+  }
