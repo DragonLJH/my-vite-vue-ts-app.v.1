@@ -12,22 +12,31 @@ export const useCounterStore = defineStore('counter', () => {
     return { count, increment }
 })
 
-type canvasStyleProps = {
+export declare type canvasStyleProps = {
     top: number
     left: number
     width: number
     height: number
 }
-type canvasProps = {
+export declare type canvasProps = {
     component: string
     style: canvasStyleProps
+    value?: string
 }
-export const useCanvasDataStore = defineStore('canvasData', () => {
+export const useCanvasDataStore = defineStore('canvasDataStore', () => {
     const canvasData = reactive([] as Array<canvasProps>)
+    const canvasItemActive = reactive({}) as canvasProps | {}
+    const canvasItemActiveIndex = ref(-1)
     function addCanvasItem(data: canvasProps) {
         canvasData.push(data)
     }
+    function changeCanvasItemIndexStyle(style: canvasStyleProps) {
+        canvasData[canvasItemActiveIndex.value].style = style
+    }
+    function changeCanvasItemIndex(index: number) {
+        canvasItemActiveIndex.value = index
+    }
 
-    return { canvasData, addCanvasItem }
+    return { canvasData, canvasItemActive, canvasItemActiveIndex, addCanvasItem, changeCanvasItemIndexStyle, changeCanvasItemIndex }
 })
 

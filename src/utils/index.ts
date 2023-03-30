@@ -10,10 +10,11 @@ export const ObjectPropertyValue = (obj: { [x: string]: any; }, str: string | nu
 
 // 固定对象属性得值添加 px 
 export const toPx = (obj: { [k: string]: string | number }) => {
-    Object.entries(obj).forEach(([k, v]) => {
-        if (Object.prototype.toString.call(v) == '[object Number]') obj[k] += "px"
+    const newObj = { ...obj }
+    Object.entries(newObj).forEach(([k, v]) => {
+        if (Object.prototype.toString.call(v) == '[object Number]') newObj[k] += "px"
     })
-    return obj
+    return newObj
 }
 
 //驼峰转连体 

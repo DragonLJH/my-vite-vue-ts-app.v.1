@@ -5,10 +5,14 @@
                 {{ item.title }}
             </div>
         </div>
-        <div class="low-code-canvas" ref="canvas" @drop="drop" @dragover="dragover">
-            <div class="low-code-canvas-item" v-for="(item, index) in canvasData" :key="index" :style="toPx(item.style)">
-                <component :is='item.component'></component>
-            </div>
+        <div class="low-code-canvas" ref="canvas" @drop="drop" @dragover="dragover" @click="store.changeCanvasItemIndex(-1)"
+            @mousedown="myMouseDown">
+
+            <CanvasItem :class="`low-code-canvas-item ${store.canvasItemActiveIndex == index ? 'active' : ''}`"
+                v-for="(item, index) in store.canvasData" :key="index" :canvasStyle="item.style"
+                @click.stop="store.changeCanvasItemIndex(index)">
+                <component :is='item.component' v-model="item.value"></component>
+            </CanvasItem>
         </div>
         <div class="low-code-config">
         </div>
@@ -16,21 +20,12 @@
 </template>
 <script setup lang="ts">
 import { reactive, ref, onMounted, createApp, defineComponent } from 'vue';
-import { useCounterStore } from '@/stores/index'
+import { useCanvasDataStore } from '@/stores/index'
 import { pathsMsg, paths } from '@/lowcoms/index'
-import { toPx } from '@/utils/index'
-type canvasStyleProps = {
-    top: number
-    left: number
-    width: number
-    height: number
-}
-type canvasProps = {
-    component: string
-    style: canvasStyleProps
-}
+import type { canvasProps } from '@/stores/index'
+import CanvasItem from './CanvasItem.vue';
+const store = useCanvasDataStore()
 
-const canvasData = reactive([] as Array<canvasProps>)
 
 const canvas = ref()
 onMounted(() => {
@@ -51,8 +46,9 @@ const drop = (e: any) => {
         width: 100,
         height: 50,
     }
-    canvasData.push(canvasItem)
-    console.log("drop", e, clientY - y, clientX - x)
+    canvasItem.value = pathsMsg[name].value
+    store.addCanvasItem(canvasItem)
+    console.log("drop", store.canvasData)
 }
 const dragover = (e: any) => {
     e.preventDefault();
@@ -61,18 +57,39 @@ const dragover = (e: any) => {
 
 // low-code-coms 组件信息
 const items = reactive(
-    Object.entries(pathsMsg).map(([name, title]) => {
+    Object.entries(pathsMsg).map(([name, res]) => {
         return {
-            name, title
+            name, ...res
         }
-    })
+    }) as Array<{ [k: string]: string }>
 )
 console.log("low-coms", items)
 
 
 
-
-
+const myMouseDown = (e: any) => {
+    if (store.canvasItemActiveIndex == -1) return
+    const move = (moveEvent: any) => {
+        // 解构赋值 给 moveX 和 moveY 分别赋值 clientX 和 clientY
+        // 移动后的坐标
+        let { clientX: moveX, clientY: moveY }: { clientX: number, clientY: number } = moveEvent
+        let { x, y } = canvas.value.getBoundingClientRect() // getBoundingClientRect()获取 appLayoutMainEdit 元素的左，上，右和下分别相对浏览器视窗的位置 
+        store.changeCanvasItemIndexStyle({
+            top: moveY - y,
+            left: moveX - x,
+            width: 100,
+            height: 50
+        })
+    }
+    const up = (e: any) => {  // 鼠标松开结束事件的监听
+        // setRange({ top: 0, left: 0, width: 0, height: 0 })
+        document.removeEventListener("mousemove", move);
+        document.removeEventListener("mouseup", up);
+    };
+    // 鼠标按下的时候分别监听鼠标移动事件和鼠标松开事件
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", up);
+}
 </script>
 <style lang="scss">
 .low-code {
@@ -104,7 +121,12 @@ console.log("low-coms", items)
         .low-code-canvas-item {
             position: absolute;
             display: inline-block;
+
+            &.active {
+                outline: solid 1px #1995e8;
+            }
         }
+
     }
 
     .low-code-config {
