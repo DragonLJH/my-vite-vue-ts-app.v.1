@@ -21,17 +21,31 @@ export declare type canvasStyleProps = {
 export declare type canvasProps = {
     component: string
     style: canvasStyleProps
-    value?: string
+    value?: string | object
 }
 export const useCanvasDataStore = defineStore('canvasDataStore', () => {
+    const initCanvasItemActive = {
+        component: "",
+        style: {
+            top: 0,
+            left: 0,
+            width: 0,
+            height: 0,
+        },
+        value: "",
+    } as canvasProps
     const canvasData = reactive([] as Array<canvasProps>)
-    const canvasItemActive = reactive({}) as canvasProps | {}
+    const canvasItemActive = reactive(initCanvasItemActive)
     const canvasItemActiveIndex = ref(-1)
     function addCanvasItem(data: canvasProps) {
         canvasData.push(data)
     }
-    function changeCanvasItemIndexStyle(style: canvasStyleProps) {
-        canvasData[canvasItemActiveIndex.value].style = style
+    function changeCanvasItemIndexStyle(style?: canvasStyleProps) {
+        if (style) {
+            canvasData[canvasItemActiveIndex.value].style = style
+            return
+        }
+        canvasData[canvasItemActiveIndex.value].style = initCanvasItemActive.style
     }
     function changeCanvasItemIndex(index: number) {
         canvasItemActiveIndex.value = index

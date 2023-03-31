@@ -3,7 +3,7 @@
         <div :class="`low-div-text ${active ? 'active' : ''}`" @dblclick="changeActive">
             {{ text }}
         </div>
-        <input :class="active ? '' : 'active'" type="text" v-model="text" @blur="changeActive">
+        <input :class="active ? '' : 'active'" type="text" v-model="text" @blur="changeActive" @keyup.enter="changeActive">
     </div>
 </template>
 <script setup lang="ts">
