@@ -8,29 +8,43 @@
       <button @click="asd">123</button>
     </div>
     <div class="mian" @click="setUpClick(-1)">
-      <span class="set-up">设置</span>
+      <span class="setUp">设置</span>
       <form :action="targetForm.action" @drop="drop" @dragover="dragover">
-        <div class="form-item" v-for="(item, index) in formItems" :key="index">
-          <div>{{ item.label }}</div>
-          <div><input :type="item.type" v-model="item.value"></div>
-          <span class="set-up" @click.stop="setUpClick(index)">设置</span>
-        </div>
+        <draggable :list="targetForm.data" chosenClass="chosen" filter=".ignore" draggable=".form-item"
+          forceFallback="true" group="people" animation="1000" @start="onStart" @end="onEnd">
+          <template #item="{ element }: { element: formConfVProps }">
+            <div class="form-item">
+              <div class="ignore">{{ element.label }}</div>
+              <div class="ignore"><input :type="element.type" v-model="element.value"></div>
+              <span class="setUp">设置</span>
+            </div>
+          </template>
+          <!-- <transition-group>
+            <div class="form-item" v-for="(item, index) in targetForm.data" :key="index">
+              <div>{{ item.label }}</div>
+              <div><input :type="item.type" v-model="item.value"></div>
+              <span class="setUp" @click.stop="setUpClick(index)">设置</span>
+            </div>
+          </transition-group> -->
+        </draggable>
+
       </form>
     </div>
     <div class="config" v-if="activeIndex != -1">
       <div>
-        label: <input type="text" v-model="formItems[activeIndex].label">
+        label: <input type="text" v-model="targetForm.data[activeIndex].label">
       </div>
       <div>
-        name: <input type="text" v-model="formItems[activeIndex].name">
+        name: <input type="text" v-model="targetForm.data[activeIndex].name">
       </div>
-      {{ formItems[activeIndex] }}
+      {{ targetForm.data[activeIndex] }}
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { reactive, computed, ref } from "vue";
+import draggable from 'vuedraggable'
 
 type FCVProps = "mc" | "label" | "type" | "name" | "value" | "id"
 type formConfVProps = {
@@ -39,11 +53,12 @@ type formConfVProps = {
 let id = 0
 const activeIndex = ref(-1)
 
-const formItems = reactive([] as unknown as Array<formConfVProps>);
 let targetItem = reactive({} as formConfVProps)
 let targetForm = reactive({
-  action: "#"
+  action: "#",
+  data: [] as unknown as Array<formConfVProps>
 })
+let drag = ref(false)
 
 const formConfItems = reactive({
   "text": { mc: "输入框", label: "label", type: "text", name: "", value: "", id: "" },
@@ -51,7 +66,7 @@ const formConfItems = reactive({
 } as { [K: string]: formConfVProps });
 
 const asd = () => {
-  console.log("asd", formItems);
+  console.log("asd", targetForm.data);
 };
 const setUpClick = (index: number) => {
   activeIndex.value = index
@@ -65,6 +80,13 @@ const inputValue = (e: any, name: string) => {
     }
   }
 }
+const onStart = function () {
+  drag.value = true;
+}
+//拖拽结束事件
+const onEnd = function () {
+  drag.value = false;
+}
 
 const dragstart = (e: any) => {
   const { name } = e.target.dataset
@@ -75,7 +97,7 @@ const drop = (e: any) => {
   const newObj = formConfItems[name]
   newObj.id = id + ""
   id++
-  formItems.push({ ...newObj })
+  targetForm.data.push({ ...newObj })
 
 };
 const dragover = (e: any) => {
@@ -126,7 +148,7 @@ $fontSize: 16px;
     padding-top: 24px;
     position: relative;
 
-    .set-up {
+    .setUp {
       position: absolute;
       top: 0;
       right: 0px;
@@ -168,7 +190,7 @@ $fontSize: 16px;
         }
       }
 
-      .set-up {
+      .setUp {
         height: 100%;
       }
 
